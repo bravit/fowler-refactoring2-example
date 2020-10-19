@@ -1,3 +1,3 @@
 fun main() {
-    println(statement(invoice, plays))
+    println(statement(INVOICE, PLAYS))
 }
