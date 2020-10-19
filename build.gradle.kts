@@ -12,10 +12,15 @@ repositories {
 }
 dependencies {
     testImplementation(kotlin("test-junit5"))
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", "5.7.0")
 }
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
 }
 application {
     mainClassName = "MainKt"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
