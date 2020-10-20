@@ -1,11 +1,17 @@
-data class Play(val id: String, val name: String, val type: String)
+data class Play(val id: String, val name: String, val type: PlayType)
 data class Performance(val playID: String, val audience: Int)
 data class Invoice(val customer: String, val performances: List<Performance>)
 
+enum class PlayType {
+    TRAGEDY,
+    COMEDY,
+    OTHER
+}
+
 val PLAYS = listOf(
-    Play("hamlet", "Hamlet", "tragedy"),
-    Play("as-like", "As You Like it", "comedy"),
-    Play("othello", "Othello", "tragedy")
+    Play("hamlet", "Hamlet", PlayType.TRAGEDY),
+    Play("as-like", "As You Like it", PlayType.COMEDY),
+    Play("othello", "Othello", PlayType.TRAGEDY)
 )
 val INVOICE = Invoice(
     "BigCo", listOf(
