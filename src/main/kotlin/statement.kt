@@ -2,25 +2,38 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.math.*
 
+data class StatementLine(val name: String,
+                         val amount: Int,
+                         val volumeCredits: Int,
+                         val audience: Int)
+
+data class StatementData(val customer: String, val lines: List<StatementLine>) {
+    val totalAmount = lines.map {it.amount}.sum()
+    val totalVolumeCredits = lines.map {it.volumeCredits}.sum()
+}
+
 fun statement(invoice: Invoice, plays: List<Play>): String {
-    var totalAmount = 0
-    var totalVolumeCredits = 0
-    var result = "Statement for ${invoice.customer}\n"
 
     fun findPlay(performance: Performance): Play {
         return plays.find { it.id == performance.playID } ?: throw Exception("Unknown play: ${performance.playID}")
     }
 
-    for(perf in invoice.performances) {
-        val play = findPlay(perf)
-        val thisAmount = amountFor(perf, play)
-        // add volume credits
-        totalVolumeCredits += volumeCreditsFor(perf, play)
-        result += " ${play.name}: ${asUSD(thisAmount)} (${perf.audience} seats)\n"
-        totalAmount += thisAmount
+    val stmtData = StatementData(invoice.customer, invoice.performances.map {
+        val play = findPlay(it)
+        StatementLine(play.name, amountFor(it, play),
+                      volumeCreditsFor(it, play),it.audience)
+    })
+
+    return prepareStatement(stmtData)
+}
+
+private fun prepareStatement(stmtData: StatementData): String {
+    var result = "Statement for ${stmtData.customer}\n"
+    for (line in stmtData.lines) {
+        result += " ${line.name}: ${asUSD(line.amount)} (${line.audience} seats)\n"
     }
-    result += "Amount owed is ${asUSD(totalAmount)}\n"
-    result += "You earned $totalVolumeCredits credits\n"
+    result += "Amount owed is ${asUSD(stmtData.totalAmount)}\n"
+    result += "You earned ${stmtData.totalVolumeCredits} credits\n"
     return result
 }
 
